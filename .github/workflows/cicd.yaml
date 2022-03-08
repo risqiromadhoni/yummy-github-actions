@@ -1,0 +1,64 @@
+# .github/workflows/cicd.yaml
+name: CI CD
+
+on:
+  # Listen Event Push Commit
+  push:
+    branches:
+      # Listen when new commit created on main branch
+      - main
+      # Listen when new commit created on release/** branch
+      - 'release/**'
+      # Ignore listener when new commit created on release/**-beta branch
+      - '!release/**-beta'
+    tags:
+      # Listen when new commit created on tag with pattern v
+      - v*
+      # Ignore listener when new commit created on tag with pattern v**-alpha
+      - '!v**-alpha'
+  # Listen When PR Created
+  pull_request:
+    branches:
+      - feature/*
+      - chore/*
+      - fix/*
+      - hotfix/*
+
+jobs:
+  init:
+    name: 🍺 Init App
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # node-version: ['14', '15', '16'] Use this for demo matrix error
+        node-version: ['14', '16']
+
+    steps:
+      - name: ☕️ Copy repository
+        uses: actions/checkout@v2
+
+      - name: 🌵 Manage Cache
+        uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+
+      - name: 🦚 Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: 📦 Install Package
+        run: yarn install --frozen-lockfile
+
+      - name: 🚪 Audit Package
+        run: yarn audit
+
+      - name: 👀 Lint Code
+        run: yarn lint
+
+      - name: 🌱 Build Code
+        run: yarn build
+        env:
+          APP_ENV: 'test'
+          APP_NAME: 'Next Blog'
