@@ -1,10 +1,14 @@
 {
   "private": true,
   "version": "1.0.0",
+  "engines": {
+    "node": ">=14.x <=17.x"
+  },
   "scripts": {
     "dev": "next",
     "build": "next build",
     "start": "next start",
+    "lint": "next lint",
     "typecheck": "tsc"
   },
   "dependencies": {
@@ -24,6 +28,9 @@
     "@types/react": "^17.0.6",
     "@types/react-dom": "^17.0.5",
     "autoprefixer": "10.4.0",
+    "envalid": "^7.3.0",
+    "eslint": "8.10.0",
+    "eslint-config-next": "12.1.0",
     "postcss": "8.4.5",
     "tailwindcss": "3.0.5"
   }
