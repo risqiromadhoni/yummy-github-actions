@@ -175,7 +175,7 @@ jobs:
           vercel-project-id: 'prj_eCk8OKIuAmbRvy3B7wsRTjbE2HjI'
 
   deploy-prod:
-    name: 🌡 Prod
+    name: 🌡 Deploy Prod
     needs: ['init', 'deploy-dev']
     if: ${{ github.event.inputs.job == 'deploy-prod'}}
     runs-on: ubuntu-latest
@@ -215,3 +215,24 @@ jobs:
           vercel-org-id: 'team_mBCjLS4bkTkpnyYrf8Y9r9OY'
           vercel-project-id: 'prj_eCk8OKIuAmbRvy3B7wsRTjbE2HjI'
           vercel-args: '--prod' # Vercel cli
+
+  lighthouse:
+    name: 💡 App Score Lighthouse
+    runs-on: ubuntu-latest
+    needs: ['deploy-prod']
+    strategy:
+      matrix:
+        node-version: ['16']
+
+    steps:
+      - name: ☕️ Copy repository
+        uses: actions/checkout@v2
+
+      - name: 🦋 Lighthouse Prod App
+        uses: foo-software/lighthouse-check-action@master
+        with:
+          # https://www.foo.software/docs/lighthouse-check-github-action/configuration
+          fooApiToken: '6227a55f9c2e3a00258772fd_8db7d464-f554-4ac4-9181-071bf746ebae'
+          device: 'all'
+          url: 'https://yummy-github-actions-one.vercel.app'
+          wait: true
