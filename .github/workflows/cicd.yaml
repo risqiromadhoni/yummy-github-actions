@@ -23,6 +23,12 @@ on:
       - chore/*
       - fix/*
       - hotfix/*
+  workflow_dispatch:
+    inputs:
+      job:
+        description: 'Deploy to prod manually'
+        required: true
+        default: 'deploy-prod'
 
 jobs:
   init:
@@ -68,6 +74,13 @@ jobs:
         env:
           APP_ENV: 'test'
           APP_NAME: 'Next Blog'
+
+      # - name: 🗂 Upload App to Artifact
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: build
+      #     if-no-files-found: error
+      #     path: build
 
   test:
     name: 🧪 Test App
@@ -122,14 +135,36 @@ jobs:
           # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   deploy-dev:
+    name: 🧬 Deploy Dev
+    needs: ['init']
     runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: ['16']
+    env:
+      APP_ENV: 'test'
+      APP_NAME: 'Next Blog'
 
     steps:
       - name: ☕️ Copy repository
         uses: actions/checkout@v2
+
+      - name: 🍪 Get Cache
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
+
+      - name: 🌵 Manage Cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: 🦚 Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
 
       - name: 🍼 Deploy Dev
         uses: amondnet/vercel-action@v20
@@ -138,3 +173,45 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           vercel-org-id: 'team_mBCjLS4bkTkpnyYrf8Y9r9OY'
           vercel-project-id: 'prj_eCk8OKIuAmbRvy3B7wsRTjbE2HjI'
+
+  deploy-prod:
+    name: 🌡 Prod
+    needs: ['init', 'deploy-dev']
+    if: ${{ github.event.inputs.job == 'deploy-prod'}}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: ['16']
+    env:
+      APP_ENV: 'test'
+      APP_NAME: 'Next Blog'
+
+    steps:
+      - name: ☕️ Copy repository
+        uses: actions/checkout@v2
+
+      - name: 🍪 Get Cache
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
+
+      - name: 🌵 Manage Cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: 🦚 Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: 🍼 Deploy Prod
+        uses: amondnet/vercel-action@v20
+        with:
+          vercel-token: '6mz36LdwcvxnSobo7UatcBfs'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          vercel-org-id: 'team_mBCjLS4bkTkpnyYrf8Y9r9OY'
+          vercel-project-id: 'prj_eCk8OKIuAmbRvy3B7wsRTjbE2HjI'
+          vercel-args: '--prod' # Vercel cli
