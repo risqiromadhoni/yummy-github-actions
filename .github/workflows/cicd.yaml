@@ -120,3 +120,21 @@ jobs:
           # Cypress Environement
           # CYPRESS_RECORD_KEY: 'fb4106fc-5064-4ecb-83b3-8980ad0f59c6'
           # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy-dev:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: ['16']
+
+    steps:
+      - name: ☕️ Copy repository
+        uses: actions/checkout@v2
+
+      - name: 🍼 Deploy Dev
+        uses: amondnet/vercel-action@v20
+        with:
+          vercel-token: '6mz36LdwcvxnSobo7UatcBfs'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          vercel-org-id: 'team_mBCjLS4bkTkpnyYrf8Y9r9OY'
+          vercel-project-id: 'prj_eCk8OKIuAmbRvy3B7wsRTjbE2HjI'
