@@ -35,3 +35,6 @@ yarn-error.log*
 
 # BAK file
 /**/*.bak
+
+# Cypress
+/cypress

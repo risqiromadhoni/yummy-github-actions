@@ -9,7 +9,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "cypress": "cypress open",
+    "cypress:headless": "cypress run",
+    "dev:e2e": "start-server-and-test dev http://localhost:3000 cypress",
+    "dev:e2e:headless": "start-server-and-test dev http://localhost:3000 cypress:headless"
   },
   "dependencies": {
     "classnames": "2.3.1",
@@ -28,10 +32,12 @@
     "@types/react": "^17.0.6",
     "@types/react-dom": "^17.0.5",
     "autoprefixer": "10.4.0",
+    "cypress": "^9.5.1",
     "envalid": "^7.3.0",
     "eslint": "8.10.0",
     "eslint-config-next": "12.1.0",
     "postcss": "8.4.5",
+    "start-server-and-test": "^1.14.0",
     "tailwindcss": "3.0.5"
   }
 }

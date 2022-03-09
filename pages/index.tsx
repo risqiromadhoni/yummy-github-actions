@@ -7,12 +7,14 @@ import { getAllPosts } from '../lib/api'
 import Head from 'next/head'
 import { CMS_NAME } from '../lib/constants'
 import Post from '../types/post'
+import { NextPage } from 'next'
 
-type Props = {
+export type HomeProps = {
   allPosts: Post[]
 }
 
-const Index = ({ allPosts }: Props) => {
+const Home: NextPage<HomeProps> = (props) => {
+  const { allPosts } = props;
   const heroPost = allPosts[0]
   const morePosts = allPosts.slice(1)
   return (
@@ -40,7 +42,7 @@ const Index = ({ allPosts }: Props) => {
   )
 }
 
-export default Index
+export default Home
 
 export const getStaticProps = async () => {
   const allPosts = getAllPosts([
